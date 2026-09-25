@@ -43,27 +43,26 @@ async def handle_audio(message: types.Message):
     file_path = f"/tmp/{file.file_name or 'audio.m4a'}"
     await bot.download_file(file_info.file_path, file_path)
 
+    wav_path = "/tmp/audio.wav"
+
     try:
-        with open(file_path, "rb") as f:
+        # Конвертируем в wav через ffmpeg
+        os.system(f"ffmpeg -i {file_path} -ar 16000 -ac 1 -c:a pcm_s16le {wav_path} -y")
+
+        with open(wav_path, "rb") as f:
             transcription = client.audio.transcriptions.create(
-                file=(file_path, f.read()),
+                file=(wav_path, f.read()),
                 model="whisper-large-v3",
                 language="ru",
-                response_format="verbose_json",
-                timestamp_granularities=["segment"]
+                response_format="text"
             )
-
-        # Сегменты приходят как словари, поэтому используем ['start'], а не .start
-        segments = transcription.segments
-        text = ""
-        for seg in segments:
-            text += f"[{seg['start']:.2f} - {seg['end']:.2f}] {seg['text']}\n"
-
-        text = text.encode('latin-1', errors='ignore').decode('utf-8', errors='ignore')
-
+        text = transcription
     except Exception as e:
         await message.answer(f"Ошибка: {e}")
-        os.remove(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        if os.path.exists(wav_path):
+            os.remove(wav_path)
         return
 
     out_path = "/tmp/result.txt"
@@ -73,6 +72,8 @@ async def handle_audio(message: types.Message):
     await message.answer_document(types.FSInputFile(out_path, filename="transcription.txt"))
 
     os.remove(file_path)
+    if os.path.exists(wav_path):
+        os.remove(wav_path)
     os.remove(out_path)
 
 async def main():
