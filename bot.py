@@ -53,10 +53,11 @@ async def handle_audio(message: types.Message):
                 timestamp_granularities=["segment"]
             )
 
+        # Сегменты приходят как словари, поэтому используем ['start'], а не .start
         segments = transcription.segments
         text = ""
         for seg in segments:
-            text += f"[{seg.start:.2f} - {seg.end:.2f}] {seg.text}\n"
+            text += f"[{seg['start']:.2f} - {seg['end']:.2f}] {seg['text']}\n"
 
         text = text.encode('latin-1', errors='ignore').decode('utf-8', errors='ignore')
 
