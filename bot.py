@@ -3,8 +3,8 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from faster_whisper import WhisperModel
 import os
-
-TOKEN = "8932270293:AAERk6hdKArLEzc_TAC7knOz9X0OAPkV-xo"
+import os
+TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
