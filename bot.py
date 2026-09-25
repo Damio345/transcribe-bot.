@@ -6,7 +6,7 @@ from groq import Groq
 
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-ALLOWED_USERNAMES = ["mikhailfizafk"]
+ALLOWED_USERNAMES = ["mikhailfizafk", "Damil54"]
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
