@@ -20,7 +20,7 @@ async def start(message: types.Message):
     if not is_allowed(message):
         await message.answer("Доступ закрыт.")
         return
-    await message.answer("Привет! Кидай аудио или видео (m4a, mp3, mp4, ogg, wav) — я переведу в текст с таймкодами.")
+    await message.answer("Привет! Кидай аудио или видео (m4a, mp3, mp4, ogg, wav) — я переведу в текст.")
 
 @dp.message(lambda m: m.audio or m.document or m.voice or m.video)
 async def handle_audio(message: types.Message):
@@ -49,15 +49,13 @@ async def handle_audio(message: types.Message):
                 file=(file_path, f.read()),
                 model="whisper-large-v3",
                 language="ru",
-                response_format="verbose_json",
-                timestamp_granularities=["segment"]
+                response_format="text"
             )
+        text = transcription
     except Exception as e:
         await message.answer(f"Ошибка: {e}")
         os.remove(file_path)
         return
-
-    text = "\n".join([f"[{s['start']:.2f} - {s['end']:.2f}] {s['text'].strip()}" for s in transcription.segments])
 
     out_path = "/tmp/result.txt"
     with open(out_path, "w", encoding="utf-8") as f:
