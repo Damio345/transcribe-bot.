@@ -1,7 +1,6 @@
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
-from faster_whisper import WhisperModel
 import os
 import os
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
