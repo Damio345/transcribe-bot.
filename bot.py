@@ -49,9 +49,10 @@ async def handle_audio(message: types.Message):
                 file=(file_path, f.read()),
                 model="whisper-large-v3",
                 language="ru",
-                response_format="text"
+                response_format="json"
             )
-        text = transcription
+        text = transcription.text
+        text = text.encode('latin-1', errors='ignore').decode('utf-8', errors='ignore')
     except Exception as e:
         await message.answer(f"Ошибка: {e}")
         os.remove(file_path)
