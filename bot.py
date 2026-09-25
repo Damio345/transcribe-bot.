@@ -9,7 +9,6 @@ TOKEN = os.environ.get("TELEGRAM_TOKEN")
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-model = WhisperModel("tiny", device="cpu", compute_type="int8")
 
 @dp.message(Command("start"))
 async def start(message: types.Message):
