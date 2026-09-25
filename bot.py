@@ -48,7 +48,6 @@ async def handle_audio(message: types.Message):
     wav_path = "/tmp/audio.wav"
 
     try:
-        # Конвертируем в wav через встроенный ffmpeg
         os.system(f'"{ffmpeg_exe}" -i "{file_path}" -ar 16000 -ac 1 -c:a pcm_s16le "{wav_path}" -y')
 
         with open(wav_path, "rb") as f:
@@ -67,16 +66,16 @@ async def handle_audio(message: types.Message):
             os.remove(wav_path)
         return
 
-    out_path = "/tmp/result.txt"
-    with open(out_path, "w", encoding="utf-8") as f:
-        f.write(text)
-
-    await message.answer_document(types.FSInputFile(out_path, filename="transcription.txt"))
+    # Отправляем текст прямо в чат (разбиваем, если длинный)
+    if len(text) > 4000:
+        for i in range(0, len(text), 4000):
+            await message.answer(text[i:i+4000])
+    else:
+        await message.answer(text)
 
     os.remove(file_path)
     if os.path.exists(wav_path):
         os.remove(wav_path)
-    os.remove(out_path)
 
 async def main():
     await dp.start_polling(bot)
